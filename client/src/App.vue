@@ -5,10 +5,10 @@
 <template>
     <div class="app-container">
         <header>
-            <h1> Welcome to the Daylight App! </h1>
+            <h1> Benvenuto nella Daylight App! </h1>
             <nav>
                 <router-link to="/">Home</router-link> |
-                <router-link to="/about">About</router-link>
+                <router-link to="/about">Info</router-link>
             </nav>
         </header>
         <main>

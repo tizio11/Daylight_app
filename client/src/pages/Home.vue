@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, computed} from 'vue';
+import {ref} from 'vue';
 import {DateTime} from 'luxon';
 
 const latitude = ref<number|null>(null);
@@ -29,40 +29,56 @@ function error(err: GeolocationPositionError) {
 const generate12Months = () => {
   const start = DateTime.now().set({month:1}); //ora e giorno correnti a partire da Gennaio dell'anno corrente
 
-  const dates = [];
+  const cards = [];
 
   for(let i=0; i<12; i++){
-    const futureMonth = start.plus({months:i}); //aggiungo i al mese per ogni iterazione a partire da start
-    const dateWithStyle=futureMonth.setLocale('it').toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY); //formattazione come voglio io
-    dates.push(dateWithStyle.toString());
+    const tempMonth = start.plus({months:i}); //aggiungo i al mese per ogni iterazione a partire da start
+    const dateWithStyle=tempMonth.setLocale('it').toLocaleString(DateTime.DATETIME_MED_WITH_WEEKDAY).split(',',1); //formattazione come voglio io
+
+    const newCard ={
+      id:i,
+      date:dateWithStyle.toString(),
+      picture:`/pictures/foto${i+1}.jpg`
+    }
+
+    cards.push(newCard);
   }
 
-  return dates;
+  return cards;
 }
 
-const dateList = ref<string[]>([]);
+const dateList = ref<any[]>([]);
 
 dateList.value=generate12Months();
 </script>
 
 <template>
     <div class="containerHome">
-        <div class="containerPos">
-            
-            <button @click="getLocation">Trova Posizione</button>
 
-            <div v-if="latitude && longitude" class="results">
-                <p><strong>Latitudine:</strong> {{ latitude }}</p>
-                <p><strong>Longitudine:</strong> {{ longitude }}</p>
-                <ul>
-                  <li v-for="month in dateList":key="month">
-                    {{ month }}
-                  </li>
-                </ul>
-            </div>
-
-            <p v-if="errorMsg" class="error">{{ errorMsg }}</p>
+      <div class="containerPos">       
+        <button @click="getLocation">Trova Posizione</button>
+        <div v-if="latitude && longitude" class="results">
+          <p><strong>Latitudine:</strong> {{ latitude }}</p>
+            <p><strong>Longitudine:</strong> {{ longitude }}</p>
         </div>
+        <p v-if="errorMsg" class="error">{{ errorMsg }}</p>
+      </div>
+
+      <div class="row">
+        <div class="col-12 col-md-6 col-lg-4 mb-4" v-for="item in dateList">
+          <div class="card" style="width: 18rem;">
+            <img class="card-img-top" :src="item.picture" alt="Card image cap">
+            <div class="card-body" >
+              <h5 class="card-title">{{item.date}}</h5>
+              <p></p>
+              <a href="#" class="btn btn-primary">Guarda la Daylight duration</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+
+      
     </div>
 </template>
 
