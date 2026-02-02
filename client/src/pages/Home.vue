@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {ref} from 'vue';
 import {DateTime} from 'luxon';
+import {getDayLight} from '../API';
 
 const latitude = ref<number|null>(null);
 const longitude = ref<number|null>(null);
@@ -19,6 +20,8 @@ function getLocation() {
 function success(position: GeolocationPosition) {
   latitude.value = position.coords.latitude;
   longitude.value = position.coords.longitude;
+
+  dayLightForCards();
 }
 
 function error(err: GeolocationPositionError) {
@@ -38,7 +41,10 @@ const generate12Months = () => {
     const newCard ={
       id:i,
       date:dateWithStyle.toString(),
-      picture:`/pictures/foto${i+1}.jpg`
+      rawDate: tempMonth.toISODate(),
+      daylight: 'Ho bisogno di conoscere la tua posizione prima..',
+      picture:`/pictures/foto${i+1}.jpg`,
+      showcard: false
     }
 
     cards.push(newCard);
@@ -50,16 +56,42 @@ const generate12Months = () => {
 const dateList = ref<any[]>([]);
 
 dateList.value=generate12Months();
+
+const dayLightForCards = async () => {
+  if (!latitude.value || !longitude.value) return;
+  const promises = dateList.value.map( async (day) => {
+    const data = await getDayLight(latitude.value!, longitude.value!, day.rawDate);
+
+    if(data && data.results){
+      day.daylight=data.results.day_length;
+    }
+    else{
+      day.daylight="N/D";
+    }
+  });
+  await Promise.all(promises);
+}
+
+const showPosition = ref(false);
+const toggleLocation = () => {
+  if (!showPosition.value && !latitude.value) {
+    getLocation();
+  }
+
+  showPosition.value = !showPosition.value;
+}
+
 </script>
 
 <template>
     <div class="containerHome">
 
       <div class="containerPos">       
-        <button @click="getLocation">Trova Posizione</button>
-        <div v-if="latitude && longitude" class="results">
-          <p><strong>Latitudine:</strong> {{ latitude }}</p>
-            <p><strong>Longitudine:</strong> {{ longitude }}</p>
+        <button class="btn btn-secondary" @click.prevent="toggleLocation">{{showPosition? 'Nascondi Posizione':'Trova Posizione'}}</button>
+        <div v-if="showPosition && latitude && longitude" class="results m-0">
+          <span>
+              <strong>Lat:</strong> {{ latitude }} | <strong>Long:</strong> {{ longitude }}
+          </span>
         </div>
         <p v-if="errorMsg" class="error">{{ errorMsg }}</p>
       </div>
@@ -70,14 +102,11 @@ dateList.value=generate12Months();
             <img class="card-img-top" :src="item.picture" alt="Card image cap">
             <div class="card-body" >
               <h5 class="card-title">{{item.date}}</h5>
-              <p></p>
-              <a href="#" class="btn btn-primary">Guarda la Daylight duration</a>
+              <a href="#" class="btn btn-primary" @click.prevent="item.showcard=!item.showcard">{{item.showcard ? item.daylight : 'Guarda la Daylight duration'}}</a>
             </div>
           </div>
         </div>
       </div>
-      
-
       
     </div>
 </template>

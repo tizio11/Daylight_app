@@ -1,0 +1,12 @@
+.containerHome{
+  display:flexbox;
+  flex-direction: column;
+  min-height: 10vh;
+}
+
+.containerPos{
+  display:flexbox;
+  flex-direction: column;
+  min-height: 10vh;
+  margin-top: 50;
+}

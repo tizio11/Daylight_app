@@ -4,6 +4,13 @@
   min-height: 100vh;
 }
 
+.navBar{
+  display: flexbox;
+  flex-direction: column;
+  margin-top: 2vh;
+  margin-bottom: 2vh;
+}
+
 footer {
   color: white;         
   padding: 2rem;             

@@ -4,9 +4,9 @@
 
 <template>
     <div class="app-container">
-        <header>
+        <header style="margin-top: 2vh;">
             <h1> Benvenuto nella Daylight App! </h1>
-            <nav>
+            <nav class="navBar">
                 <router-link to="/">Home</router-link> |
                 <router-link to="/about">Info</router-link>
             </nav>
