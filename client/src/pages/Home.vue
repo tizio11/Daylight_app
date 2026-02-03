@@ -11,7 +11,12 @@ const errorMsg = ref<string>('');
 function getLocation() {
   errorMsg.value='';  
   if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(success, error);
+    const options = {
+      enableHighAccuracy: false,
+      timeout: 5000,
+      maximumAge: 0
+    };
+    navigator.geolocation.getCurrentPosition(success, error,options);
   } else {
     errorMsg.value = "La Geolocalizzazione non è supportata da questo browser.";
   }
